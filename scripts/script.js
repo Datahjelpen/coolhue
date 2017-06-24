@@ -1,14 +1,13 @@
-// coolHue Script
 document.addEventListener("DOMContentLoaded", function () {
 
     //Globals
-    var chPaper = document.querySelector(".ch-paper");
-    var chColorFrom = document.querySelectorAll(".ch-color-from");
-    var chColorTo = document.querySelectorAll(".ch-color-to");
-    var chGradient = document.querySelectorAll(".ch-gradient");
-    var chCode = document.querySelectorAll(".ch-code");
-    var chGrab = document.querySelectorAll(".ch-grab");
-    var notifyPlank = document.querySelector(".ch-notify-plank");
+    var dhPaper = document.querySelector(".dh-paper");
+    var dhColorFrom = document.querySelectorAll(".dh-color-from");
+    var dhColorTo = document.querySelectorAll(".dh-color-to");
+    var dhGradient = document.querySelectorAll(".dh-gradient");
+    var dhCode = document.querySelectorAll(".dh-code");
+    var dhGrab = document.querySelectorAll(".dh-grab");
+    var notifyPlank = document.querySelector(".dh-notify-plank");
     var backgroundImage = "background-image: ";
     var gradientType = "linear-gradient( 135deg, ";
     var gradientStart = " 0%, ";
@@ -16,59 +15,86 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     for (var i = 0; i < colorData.length; i++) {
-        tempColorFrom = colorData[i][0];
-        tempColorTo = colorData[i][1];
-        var tempImage = gradientType + tempColorFrom + gradientStart + tempColorTo + gradientEnd;
+        var seperator = document.createElement("h1");
+        var seperatorText = document.createTextNode(colorData[i][0]);
+        seperator.appendChild(seperatorText);
+        dhPaper.appendChild(seperator);
 
-        var nodeGradientBrick = document.createElement("div");
-        nodeGradientBrick.classList.add("ch-gradient-brick");
-        var nodeGradient = document.createElement("div");
-        nodeGradient.classList.add("ch-gradient");
-        nodeGradient.style.backgroundImage = tempImage;
-        var nodeActions = document.createElement("div");
-        nodeActions.classList.add("ch-actions");
-        var nodeCode = document.createElement("span");
-        nodeCode.classList.add("ch-code");
-        nodeCode.dataset.colorFrom = tempColorFrom;
-        nodeCode.dataset.colorTo = tempColorTo;
+        for (var j = 1; j < colorData[i].length; j++) {
+            tempColorFrom = colorData[i][j][0];
+            tempColorTo = colorData[i][j][1];
+            var gotTwoColors = true;
 
-        var nodeGrab = document.createElement("span");
-        nodeGrab.classList.add("ch-grab");
-        nodeGrab.dataset.colorFrom = tempColorFrom;
-        nodeGrab.dataset.colorTo = tempColorTo;
+            if (!tempColorTo) {
+                gotTwoColors = false;
+            }
 
-        var nodeColors = document.createElement("div");
-        nodeColors.classList.add("ch-colors");
+            var nodeGradientBrick = document.createElement("div");
+            nodeGradientBrick.classList.add("dh-gradient-brick");
+            var nodeGradient = document.createElement("div");
+            nodeGradient.classList.add("dh-gradient");
 
-        var nodeColorFrom = document.createElement("span");
-        nodeColorFrom.classList.add("ch-color-from");
-        var nodeColorFromText = document.createTextNode(tempColorFrom);
+            if (gotTwoColors) {
+                nodeGradient.style.backgroundImage = gradientType + tempColorFrom + gradientStart + tempColorTo + gradientEnd;;
+            } else {
+                nodeGradient.style.backgroundColor = tempColorFrom;
+            }
 
-        var nodeColorTo = document.createElement("span");
-        nodeColorTo.classList.add("ch-color-to");
-        nodeColorTo.style.color = tempColorTo;
+            var nodeActions = document.createElement("div");
+            nodeActions.classList.add("dh-actions");
+            var nodeCode = document.createElement("span");
+            nodeCode.classList.add("dh-code");
+            nodeCode.dataset.colorFrom = tempColorFrom;
 
-        var nodeColorToText = document.createTextNode(tempColorTo);
+            var nodeGrab = document.createElement("span");
+            nodeGrab.classList.add("dh-grab");
+            nodeGrab.dataset.colorFrom = tempColorFrom;
 
-        //Append to Paper
-        nodeGradientBrick.appendChild(nodeGradient);
-        nodeActions.appendChild(nodeCode);
-        nodeActions.appendChild(nodeGrab);
-        nodeGradient.appendChild(nodeActions);
-        nodeColors.appendChild(nodeColorFrom);
-        nodeColorFrom.appendChild(nodeColorFromText);
-        nodeColors.appendChild(nodeColorTo);
-        nodeColorTo.appendChild(nodeColorToText);
-        nodeGradientBrick.appendChild(nodeColors);
-        chPaper.appendChild(nodeGradientBrick);
+            var nodeColors = document.createElement("div");
+            nodeColors.classList.add("dh-colors");
+
+            var nodeColorFrom = document.createElement("span");
+            nodeColorFrom.classList.add("dh-color-from");
+            var nodeColorFromText = document.createTextNode(tempColorFrom);
+
+            if (gotTwoColors) {
+                nodeCode.dataset.colorTo = tempColorTo;
+                nodeGrab.dataset.colorTo = tempColorTo;
+                var nodeColorToText = document.createTextNode(tempColorTo);
+                
+                var nodeColorTo = document.createElement("span");
+                nodeColorTo.classList.add("dh-color-to");
+                nodeColorTo.style.color = tempColorTo;
+
+                nodeColors.appendChild(nodeColorTo);
+                nodeColorTo.appendChild(nodeColorToText);
+            }
+
+
+            //Append to Paper
+            nodeGradientBrick.appendChild(nodeGradient);
+            nodeActions.appendChild(nodeCode);
+            nodeActions.appendChild(nodeGrab);
+            nodeGradient.appendChild(nodeActions);
+            nodeColors.appendChild(nodeColorFrom);
+            nodeColorFrom.appendChild(nodeColorFromText);
+            nodeGradientBrick.appendChild(nodeColors);
+            dhPaper.appendChild(nodeGradientBrick);
+        }
     }
 
     window.onclick = function (event) {
         //Copy Code
-        if (event.target.matches(".ch-code")) {
+        if (event.target.matches(".dh-code")) {
             var eventColorFrom = event.target.dataset.colorFrom;
             var eventColorTo = event.target.dataset.colorTo;
-            var eventResult = backgroundImage + gradientType + eventColorFrom + gradientStart + eventColorTo + gradientEnd + ";";
+            var eventResult;
+
+            if (eventColorTo) {
+                eventResult = backgroundImage + gradientType + eventColorFrom + gradientStart + eventColorTo + gradientEnd + ";";
+            } else {
+                eventResult = eventColorFrom;
+            }
 
             function dynamicNode() {
                 var node = document.createElement("pre");
@@ -92,35 +118,41 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.removeChild(node);
 
             function notifyClient() {
-                notifyPlank.classList.add("ch-notify-plank");
+                notifyPlank.classList.add("dh-notify-plank");
                 var notify = document.createElement("span");
-                notify.classList.add("ch-notify", "ch-notify-animate");
-                var notifyText = document.createTextNode("CSS3 Code Copied 👍");
+                notify.classList.add("dh-notify", "dh-notify-animate");
+                var notifyText = document.createTextNode("Code Copied 👍");
                 notify.appendChild(notifyText);
                 notifyPlank.appendChild(notify);
             }
             notifyClient();
 
             setTimeout(function () {
-                var notify = document.querySelectorAll(".ch-notify");
+                var notify = document.querySelectorAll(".dh-notify");
                 var notify = notify[0];
                 notifyPlank.removeChild(notify);
             }, 5000);
         }
         
         //Grab Palette
-        if (event.target.matches(".ch-grab")) {
+        if (event.target.matches(".dh-grab")) {
             var eventColorFrom = event.target.dataset.colorFrom;
             var eventColorTo = event.target.dataset.colorTo;
             var canvas = document.createElement("canvas");
-            canvas.width = "500";
-            canvas.height = "500";
+            canvas.width = "2000";
+            canvas.height = "1000";
             var ctx = canvas.getContext("2d");
-            var tempGradient = ctx.createLinearGradient(0, 0, 500, 500);
-            tempGradient.addColorStop(0, eventColorFrom);
-            tempGradient.addColorStop(1, eventColorTo);
-            ctx.fillStyle = tempGradient;
-            ctx.fillRect(0, 0, 500, 500);
+
+            if (eventColorTo) {
+                var tempGradient = ctx.createLinearGradient(0, 0, 2000, 1000);
+                tempGradient.addColorStop(0, eventColorFrom);
+                tempGradient.addColorStop(1, eventColorTo);
+                ctx.fillStyle = tempGradient;
+            } else {
+                ctx.fillStyle = eventColorFrom;
+            }
+
+            ctx.fillRect(0, 0, 2000, 1000);
             window.open(canvas.toDataURL());
         }
     }
